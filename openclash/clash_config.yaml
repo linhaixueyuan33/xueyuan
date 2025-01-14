@@ -1,0 +1,262 @@
+#基础配置
+# 日期：2024-12-30
+# 作者：lin
+# 适用版本：适配使用mihomo内核的程序
+
+
+# 锚点
+pr: &pr {type: select, proxies: [🚀 节点选择, 🇭🇰 香港节点, 🇨🇳 台湾节点, 🇯🇵 日本节点, 🇸🇬 加坡节点,  🇺🇲 美国节点, 🌐 全部节点, 🟢 直连]}
+pe: &pe {type: select, proxies: [🟢 直连, 🚀 节点选择, 🇭🇰 香港节点, 🇨🇳 台湾节点, 🇯🇵 日本节点, 🇸🇬 加坡节点, 🇺🇲 美国节点, 🌐 全部节点]}
+
+# 机场订阅
+proxy-providers:
+  红杏加速器:
+    type: http
+    interval: 21600
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+    url: "订阅链接"
+  
+# 用于下载订阅时指定UA
+global-ua: clash.meta
+
+# 全局配置
+port: 7890
+socks-port: 7891
+redir-port: 7892
+mixed-port: 7893
+tproxy-port: 7894
+log-level: info
+ipv6: true
+allow-lan: true
+unified-delay: true   # 统一延迟
+tcp-concurrent: true
+
+
+geodata-mode: false
+
+geodata-loader: standard
+geo-auto-update: true
+geo-update-interval: 24
+geox-url:
+  geosite: "https://mirror.ghproxy.com/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
+  mmdb: "https://mirror.ghproxy.com/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.metadb"
+  geoip: "https://mirror.ghproxy.com/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat"
+  asn: "https://mirror.ghproxy.com/https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
+
+
+
+find-process-mode: strict
+global-client-fingerprint: chrome
+keep-alive-idle: 600
+keep-alive-interval: 30
+
+
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+
+sniffer:
+  enable: true
+  force-dns-mapping: true
+  parse-pure-ip: true
+  override-destination: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  force-domain:
+    - +.v2ex.com
+  skip-domain:
+    - "Mijia Cloud"
+    - "dlg.io.mi.com"
+    - "+.push.apple.com"
+    - "+.apple.com"
+
+# 代理模式
+tun:
+  enable: true
+  stack: mixed
+  mtu: 9000
+  dns-hijack:
+    - "any:53"
+    - "tcp://any:53"
+  auto-route: true
+  auto-redirect: true
+  auto-detect-interface: true
+
+# DNS模块
+dns:
+  cache-algorithm: arc
+  enable: true
+  listen: 0.0.0.0:53
+  ipv6: false
+  respect-rules: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.0/15
+  fake-ip-filter-mode: blacklist
+  fake-ip-filter:
+    - geosite:private
+    - geosite:cn
+    - "+.lan"
+    - "connect.rom.miui.com"
+    - "+.miwifi.com"
+    - "+.ntp.org"
+    - "+.u-tools.cn"
+    - "+.mediatek.com"
+    - "+.cfprefer1.xyz"
+    - "+.wetab.link"
+    # QQ
+    - "localhost.ptlogin2.qq.com"
+    - "localhost.sec.qq.com"
+    # WeChat
+    - "localhost.work.weixin.qq.com"
+    - "+.weixin.qq.com"
+    - "+.wechat.com"
+    # Windows
+    - "time.windows.com"
+    - "+.msftconnecttest.com"
+    - "+.msftncsi.com"
+    - "+.wpsmail.net"
+    - "+.henzanapp.com"
+    - "+.pconline.com.cn"
+  nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  proxy-server-nameserver:
+    - 8.8.8.8
+    - 1.1.1.1
+  fallback:
+    - 8.8.8.8
+    - 1.1.1.1
+    - tls://1.0.0.1:853
+    - tls://dns.google:853
+
+
+proxies:
+  - name: "🟢 直连"
+    type: direct
+    udp: true
+
+
+# 策略组
+proxy-groups:
+  - {name: 🚀 节点选择, type: select, proxies: [🇭🇰 香港节点, 🇨🇳 台湾节点, 🇯🇵 日本节点, 🇸🇬 加坡节点, 🇺🇲 美国节点, 🌐 全部节点, 🟢 直连]}
+  - {name: 🌐 全部节点, type: select, include-all: true}
+  - {name: 📹 YouTube, <<: *pr}
+  - {name: 🍀 Google, <<: *pr}
+  - {name: 🎮️ Steam, <<: *pr}
+  - {name: 🤖 AI服务, <<: *pr}
+  - {name: 💬 ChatGPT, <<: *pr}
+  - {name: Ⓜ️ Copilot, <<: *pr}
+  - {name: 📢 谷歌FCM, <<: *pr}
+  - {name: 👨🏿‍💻 GitHub, <<: *pr}
+  - {name: 🪟 Microsoft, <<: *pe}
+  - {name: 🎵 TikTok, <<: *pr}
+  - {name: 📲 Telegram, <<: *pr}
+  - {name: 🕊️ Twitter, <<: *pr}
+  - {name: 🎥 NETFLIX, <<: *pr}
+  - {name: 🎥 Emby, <<: *pr}
+  - {name: 🎥 DisneyPlus, <<: *pr}
+  - {name: 🍎 Apple, <<: *pr}
+  - {name: 📺 国内媒体, <<: *pe}
+  - {name: 🌎 国外媒体, <<: *pr}
+  - {name: 🎯 全球直连, type: select, proxies: [🟢 直连, 🚀 节点选择, 🌐 全部节点]}
+  - {name: 🐟 漏网之鱼, <<: *pr}
+  - {name: 🇭🇰 香港节点, type: select, include-all: true, filter: "(?i)香港|hk|hongkong|hong kong" }
+  - {name: 🇨🇳 台湾节点, type: select, include-all: true, filter: "(?i)台湾|twn|taiwan|台北|高雄" }
+  - {name: 🇯🇵 日本节点, type: select, include-all: true, filter: "(?i)日本|jp|japan" }
+  - {name: 🇸🇬 加坡节点, type: select, include-all: true, filter: "(?i)新加坡|sg|singapore" }
+  - {name: 🇺🇲 美国节点, type: select, include-all: true, filter: "(?i)美国|us|united states|united states" }
+  
+    
+  
+
+rules:
+  - RULE-SET,Lan,🎯 全球直连
+  - RULE-SET,direct,🎯 全球直连
+  - RULE-SET,Custom_Direct,🎯 全球直连
+  - RULE-SET,FCM,📢 谷歌FCM
+  - RULE-SET,googleCN,🎯 全球直连
+  - RULE-SET,GoogleCNProxyIP,🚀 节点选择
+  - RULE-SET,steamCN,🎯 全球直连
+  - RULE-SET,steamCDN,🎯 全球直连
+  - RULE-SET,telegram,📲 Telegram
+  - RULE-SET,Gemini,🤖 AI服务
+  - RULE-SET,Claude,🤖 AI服务
+  - RULE-SET,OpenAi,💬 ChatGPT
+  - RULE-SET,Copilot,Ⓜ️ Copilot
+  - RULE-SET,github,👨🏿‍💻 GitHub
+  - RULE-SET,Apple,🍎 Apple
+  - RULE-SET,Microsoft,🪟 Microsoft
+  - RULE-SET,Youtube,📹 YouTube
+  - RULE-SET,Google,🍀 Google
+  - RULE-SET,TikTok,🎵 TikTok
+  - RULE-SET,Twitter,🕊️ Twitter
+  - RULE-SET,Netflix,🎥 NETFLIX
+  - RULE-SET,Emby,🎥 Emby
+  - RULE-SET,DisneyPlus,🎥 DisneyPlus
+  - RULE-SET,steam,🎮️ Steam
+  - RULE-SET,cn1,📺 国内媒体
+  - RULE-SET,cn2,📺 国内媒体
+  - RULE-SET,Global,🌎 国外媒体
+  
+  - RULE-SET,GlobalMedia,🚀 节点选择
+  - RULE-SET,ProxyGFWlist,🚀 节点选择
+  - RULE-SET,ChinaMedia,🎯 全球直连
+  - RULE-SET,ChinaDomain,🎯 全球直连
+  - RULE-SET,ChinaCompanyIp,🎯 全球直连
+  - RULE-SET,ChinaIp,🎯 全球直连
+  - RULE-SET,Download,🎯 全球直连
+  - GEOSITE,CN,🎯 全球直连
+  - GEOIP,Lan,🎯 全球直连,no-resolve
+  - GEOIP,CN,🎯 全球直连,no-resolve
+  - MATCH,🐟 漏网之鱼
+
+rule-anchor:
+  lin: &lin { type: http, interval: 86400, behavior: classical, format: text }
+  ACL4SSR: &ACL4SSR { type: http, interval: 86400, behavior: classical, format: text }
+  blackmatrix7: &blackmatrix7 { type: http, interval: 86400, behavior: classical, format: text }
+rule-providers:
+  Lan: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Lan/Lan.list" }
+  direct: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Direct/Direct.list" }
+  Custom_Direct: { <<: *lin, url: "https://raw.githubusercontent.com/linhaixueyuan3/guizeji/refs/heads/main/rule/Custom_Direct.list" }
+  FCM: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/GoogleFCM/GoogleFCM.list" }
+  googleCN: { <<: *ACL4SSR, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/refs/heads/master/Clash/Ruleset/GoogleCN.list" }
+  GoogleCNProxyIP: { <<: *ACL4SSR, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/refs/heads/master/Clash/Ruleset/GoogleCNProxyIP.list" }
+  Gemini: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Gemini/Gemini.list" }
+  Claude: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Claude/Claude.list" }
+  OpenAi: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/OpenAI/OpenAI.list" }
+  Copilot: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Copilot/Copilot.list" }
+  Youtube: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/YouTube/YouTube.list" }
+  Google: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Google/Google.list" }
+  steamCDN: { <<: *lin, url: "https://raw.githubusercontent.com/linhaixueyuan3/guizeji/refs/heads/main/rule/Steam_CDN.list" }
+  steam: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Steam/Steam.list" }
+  github: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/GitHub/GitHub.list" }
+  telegram: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Telegram/Telegram.list" }
+  Twitter: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Twitter/Twitter.list" }
+  Netflix: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Netflix/Netflix.list" }
+  Emby: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Emby/Emby.list" }
+  DisneyPlus: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Disney/Disney.list" }
+  steamCN: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/SteamCN/SteamCN.list" }
+  Microsoft: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Microsoft/Microsoft.list" }
+  Apple: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Apple/Apple.list" }
+  TikTok: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/TikTok/TikTok.list" }
+  ProxyGFWlist: { <<: *ACL4SSR, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ProxyGFWlist.list" }
+  ChinaMedia: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMedia/ChinaMedia.list" }
+  GlobalMedia: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMedia/ChinaMedia.list" }
+  ChinaDomain: { <<: *ACL4SSR, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/refs/heads/master/Clash/ChinaDomain.list" }
+  ChinaCompanyIp: { <<: *ACL4SSR, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/refs/heads/master/Clash/ChinaCompanyIp.list" }
+  ChinaIp: { <<: *ACL4SSR, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/refs/heads/master/Clash/ChinaIp.list" }
+  Download: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Download/Download.list" }
+  cn1: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMedia/ChinaMedia.list" }
+  cn2: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaMedia/ChinaMedia.list" }
+  Global: { <<: *blackmatrix7, url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GlobalMedia/GlobalMedia.list" }
+
